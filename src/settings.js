@@ -1,29 +1,41 @@
-module.exports = {
-  title: 'Vue Element Admin',
-
+export default {
   /**
-   * @type {boolean} true | false
-   * @description Whether show the settings right-panel
+   * 网页标题
+   */
+  title: import.meta.env.VITE_APP_TITLE,
+  /**
+   * 侧边栏主题 深色主题theme-dark，浅色主题theme-light
+   */
+  sideTheme: 'theme-dark',
+  /**
+   * 是否系统布局配置
    */
   showSettings: true,
 
   /**
-   * @type {boolean} true | false
-   * @description Whether need tagsView
+   * 是否显示顶部导航
+   */
+  topNav: false,
+
+  /**
+   * 是否显示 tagsView
    */
   tagsView: true,
 
   /**
-   * @type {boolean} true | false
-   * @description Whether fix the header
+   * 是否固定头部
    */
   fixedHeader: false,
 
   /**
-   * @type {boolean} true | false
-   * @description Whether show the logo in sidebar
+   * 是否显示logo
    */
-  sidebarLogo: false,
+  sidebarLogo: true,
+
+  /**
+   * 是否显示动态标题
+   */
+  dynamicTitle: false,
 
   /**
    * @type {string | array} 'production' | ['production', 'development']
@@ -31,5 +43,5 @@ module.exports = {
    * The default is only used in the production env
    * If you want to also use it in dev, you can pass ['production', 'development']
    */
-  errorLog: ['production', 'development']
+  errorLog: 'production'
 }
