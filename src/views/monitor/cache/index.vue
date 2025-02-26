@@ -3,7 +3,7 @@
     <el-row>
       <el-col :span="24" class="card-box">
         <el-card>
-          <template #header><Monitor style="width: 1em; height: 1em; vertical-align: middle;" /> <span style="vertical-align: middle;">基本信息</span></template>
+          <div slot="header"><span><i class="el-icon-monitor"></i> 基本信息</span></div>
           <div class="el-table el-table--enable-row-hover el-table--medium">
             <table cellspacing="0" style="width: 100%">
               <tbody>
@@ -45,7 +45,7 @@
 
       <el-col :span="12" class="card-box">
         <el-card>
-          <template #header><PieChart style="width: 1em; height: 1em; vertical-align: middle;" /> <span style="vertical-align: middle;">命令统计</span></template>
+          <div slot="header"><span><i class="el-icon-pie-chart"></i> 命令统计</span></div>
           <div class="el-table el-table--enable-row-hover el-table--medium">
             <div ref="commandstats" style="height: 420px" />
           </div>
@@ -54,7 +54,7 @@
 
       <el-col :span="12" class="card-box">
         <el-card>
-          <template #header><Odometer style="width: 1em; height: 1em; vertical-align: middle;" /> <span style="vertical-align: middle;">内存信息</span></template>
+          <div slot="header"><span><i class="el-icon-odometer"></i> 内存信息</span></div>
           <div class="el-table el-table--enable-row-hover el-table--medium">
             <div ref="usedmemory" style="height: 420px" />
           </div>
@@ -64,69 +64,85 @@
   </div>
 </template>
 
-<script setup name="Cache">
-import { getCache } from '@/api/monitor/cache';
-import * as echarts from 'echarts';
+<script>
+import { getCache } from "@/api/monitor/cache";
+import * as echarts from "echarts";
 
-const cache = ref([]);
-const commandstats = ref(null);
-const usedmemory = ref(null);
-const { proxy } = getCurrentInstance();
+export default {
+  name: "Cache",
+  data() {
+    return {
+      // 统计命令信息
+      commandstats: null,
+      // 使用内存
+      usedmemory: null,
+      // cache信息
+      cache: []
+    }
+  },
+  created() {
+    this.getList();
+    this.openLoading();
+  },
+  methods: {
+    /** 查缓存询信息 */
+    getList() {
+      getCache().then((response) => {
+        this.cache = response.data;
+        this.$modal.closeLoading();
 
-function getList() {
-  proxy.$modal.loading("正在加载缓存监控数据，请稍候！");
-  getCache().then(response => {
-    proxy.$modal.closeLoading();
-    cache.value = response.data;
-
-    const commandstatsIntance = echarts.init(commandstats.value, "macarons");
-    commandstatsIntance.setOption({
-      tooltip: {
-        trigger: "item",
-        formatter: "{a} <br/>{b} : {c} ({d}%)"
-      },
-      series: [
-        {
-          name: "命令",
-          type: "pie",
-          roseType: "radius",
-          radius: [15, 95],
-          center: ["50%", "38%"],
-          data: response.data.commandStats,
-          animationEasing: "cubicInOut",
-          animationDuration: 1000
-        }
-      ]
-    });
-    const usedmemoryInstance = echarts.init(usedmemory.value, "macarons");
-    usedmemoryInstance.setOption({
-      tooltip: {
-        formatter: "{b} <br/>{a} : " + cache.value.info.used_memory_human
-      },
-      series: [
-        {
-          name: "峰值",
-          type: "gauge",
-          min: 0,
-          max: 1000,
-          detail: {
-            formatter: cache.value.info.used_memory_human
+        this.commandstats = echarts.init(this.$refs.commandstats, "macarons");
+        this.commandstats.setOption({
+          tooltip: {
+            trigger: "item",
+            formatter: "{a} <br/>{b} : {c} ({d}%)",
           },
-          data: [
+          series: [
             {
-              value: parseFloat(cache.value.info.used_memory_human),
-              name: "内存消耗"
+              name: "命令",
+              type: "pie",
+              roseType: "radius",
+              radius: [15, 95],
+              center: ["50%", "38%"],
+              data: response.data.commandStats,
+              animationEasing: "cubicInOut",
+              animationDuration: 1000,
             }
           ]
-        }
-      ]
-    })
-    window.addEventListener("resize", () => {
-      commandstatsIntance.resize();
-      usedmemoryInstance.resize();
-    });
-  })
-}
-
-getList();
+        });
+        this.usedmemory = echarts.init(this.$refs.usedmemory, "macarons");
+        this.usedmemory.setOption({
+          tooltip: {
+            formatter: "{b} <br/>{a} : " + this.cache.info.used_memory_human,
+          },
+          series: [
+            {
+              name: "峰值",
+              type: "gauge",
+              min: 0,
+              max: 1000,
+              detail: {
+                formatter: this.cache.info.used_memory_human,
+              },
+              data: [
+                {
+                  value: parseFloat(this.cache.info.used_memory_human),
+                  name: "内存消耗",
+                }
+              ]
+            }
+          ]
+        });
+        window.addEventListener("resize", () => {
+          this.commandstats.resize();
+          this.usedmemory.resize();
+        });
+      });
+    },
+    // 打开加载层
+    openLoading() {
+      this.$modal.loading("正在加载缓存监控数据，请稍候！");
+    }
+  }
+};
 </script>
