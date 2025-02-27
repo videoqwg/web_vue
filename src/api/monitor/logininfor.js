@@ -32,3 +32,10 @@ export function cleanLogininfor() {
     method: 'delete'
   })
 }
+
+export function DailyActiveUsers() {
+  return request({
+    url: '/monitor/logininfor/dailyActiveUsers',
+    method: 'get'
+  })
+}
