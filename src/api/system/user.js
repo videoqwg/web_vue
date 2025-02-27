@@ -134,3 +134,24 @@ export function deptTreeSelect() {
     method: 'get'
   })
 }
+
+export function CumulativeUserCount() {
+  return request({
+    url: '/system/user/getCumulativeUserCount',
+    method: 'get'
+  })
+}
+
+export function TopRegion() {
+  return request({
+    url: '/system/user/getTopRegion',
+    method: 'get'
+  })
+}
+
+export function DeviceUserCounts() {
+  return request({
+    url: '/system/user/getDeviceUserCounts',
+    method: 'get'
+  })
+}
