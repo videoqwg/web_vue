@@ -87,6 +87,18 @@ export const constantRoutes = [
         meta: { title: '个人中心', icon: 'user' }
       }
     ]
+  },
+  {
+    path: '/resume',
+    component: Layout,
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/resume/index'),
+        name: 'resume',
+        meta: { title: '他的简历', icon: 'excel' }
+      }
+    ]
   }
 ]
 
